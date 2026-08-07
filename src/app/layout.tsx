@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: "/opengraph-image?v=wide-smile-4",
+        url: "/opengraph-image?v=app-smile-5",
         width: 1200,
         height: 630,
         alt: "Make One Smile Today — 오늘 한 사람 웃기기",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: APP_NAME,
     description: "오늘, 한 사람을 웃게 해볼까요? 😊",
-    images: ["/twitter-image?v=wide-smile-4"],
+    images: ["/twitter-image?v=app-smile-5"],
   },
 };
 

@@ -98,10 +98,23 @@ export function useSmileStats() {
     const savedStats = readStats();
     if (savedStats) {
       setStats(savedStats);
-      return;
+    } else {
+      saveStats(createInitialStats());
     }
 
-    saveStats(createInitialStats());
+    const syncStoredStats = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || event.newValue === null) return;
+
+      try {
+        const syncedStats = migrateStats(JSON.parse(event.newValue) as unknown);
+        if (syncedStats) setStats(syncedStats);
+      } catch {
+        // 다른 탭의 손상된 값은 무시하고 현재의 정상 기록을 유지합니다.
+      }
+    };
+
+    window.addEventListener("storage", syncStoredStats);
+    return () => window.removeEventListener("storage", syncStoredStats);
   }, []);
 
   const registerSmile = useCallback(() => {
