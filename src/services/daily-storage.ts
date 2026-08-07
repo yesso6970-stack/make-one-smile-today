@@ -2,7 +2,8 @@ import { createInitialDailyActivityState } from "@/lib/daily-activity";
 import type { DailyActivityState } from "@/types/daily-activity";
 
 export const DAILY_ACTIVITY_STORAGE_KEY = "make-one-smile:daily-activity:v1";
-const SMILE_STATS_STORAGE_KEY = "make-one-smile:stats:v2";
+export const SMILE_STATS_STORAGE_KEY = "make-one-smile:stats:v2";
+export const DAILY_ACTIVITY_CHANGED_EVENT = "make-one-smile:activity-changed";
 
 export interface SmileStatsBridge {
   mySmiles: number;

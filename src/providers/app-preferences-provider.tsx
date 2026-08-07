@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import { AppPreferencesContext } from "@/contexts/app-preferences-context";
 import {
@@ -15,6 +16,7 @@ function parsePreferences(value: unknown): AppPreferences | null {
   const candidate = value as Record<string, unknown>;
   if (
     typeof candidate.notifications !== "boolean" ||
+    typeof candidate.reminderTime !== "string" ||
     typeof candidate.vibration !== "boolean" ||
     typeof candidate.sound !== "boolean"
   ) {
@@ -22,6 +24,7 @@ function parsePreferences(value: unknown): AppPreferences | null {
   }
   return {
     notifications: candidate.notifications,
+    reminderTime: candidate.reminderTime,
     vibration: candidate.vibration,
     sound: candidate.sound,
   };
@@ -33,6 +36,7 @@ export function AppPreferencesProvider({
   const [preferences, setPreferences] =
     useState<AppPreferences>(DEFAULT_PREFERENCES);
   const [hydrated, setHydrated] = useState(false);
+  const { status } = useSession();
 
   useEffect(() => {
     try {
@@ -45,6 +49,35 @@ export function AppPreferencesProvider({
       setHydrated(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    const controller = new AbortController();
+    void fetch("/api/preferences", {
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then(async (response) =>
+        response.ok
+          ? (response.json() as Promise<{
+              preferences?: Partial<AppPreferences>;
+            }>)
+          : null,
+      )
+      .then((data) => {
+        if (!data?.preferences) return;
+        setPreferences((current) => {
+          const next = { ...current, ...data.preferences };
+          window.localStorage.setItem(
+            PREFERENCES_STORAGE_KEY,
+            JSON.stringify(next),
+          );
+          return next;
+        });
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [status]);
 
   const updatePreference = useCallback(
     <Key extends keyof AppPreferences>(
@@ -61,10 +94,17 @@ export function AppPreferencesProvider({
         } catch {
           // 현재 세션의 선택은 유지합니다.
         }
+        if (status === "authenticated") {
+          void fetch("/api/preferences", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(next),
+          });
+        }
         return next;
       });
     },
-    [],
+    [status],
   );
 
   const resetLocalData = useCallback(() => {

@@ -12,7 +12,28 @@
 - 향후 OpenAI 연동 경계를 분리한 더미 AI 웃음 아이디어 10개
 - 입력 후 자동 저장되고 최근 기록을 다시 볼 수 있는 나만의 칭찬 일지
 
-개인 미션·포인트는 인증이 없는 STEP 2에서는 `src/services/daily-storage.ts`의 버전 관리된 브라우저 저장소 어댑터를 사용합니다. 칭찬 일지는 Neon PostgreSQL에 익명 기기 해시와 날짜별로 분리 저장되며, 네트워크가 없을 때는 브라우저에 먼저 저장됩니다. 로그인 전에는 같은 기기·브라우저에서만 자신의 일지를 다시 불러올 수 있습니다.
+비회원은 `src/services/daily-storage.ts`의 버전 관리된 브라우저 저장소로 모든 핵심 루틴을 체험할 수 있습니다. Google 로그인 후에는 로컬 미션·칭찬 일지·포인트·배지·연속 기록이 Neon의 사용자 계정으로 병합되고, 다른 기기에서도 다시 동기화됩니다.
+
+## Premium & Smart 기능
+
+- Google OAuth 로그인, 비회원 체험, 프로필과 로그아웃
+- 무료 로컬 스트리밍 코치와 선택형 OpenAI Responses API 연동
+- 사용자별 일일 활동, 통계, 배지, 설정과 AI 사용량 저장
+- 주간 행복 리포트, 월간 차트·Calendar Heatmap, 완료 공유 이미지
+- 가족 그룹, 초대 코드, 가족 랭킹과 친구 연결
+- 무료 회원 AI 코치 하루 3회, Premium entitlement 기반 무제한 구조
+- 알림 시간 저장과 PWA 실행 중 일일·연속 기록 리마인드
+
+OpenAI API는 무료 서비스가 아니므로 `OPENAI_API_KEY`가 없을 때는 서버의 무료 로컬 코치가 동일한 스트리밍 UI로 응답합니다. 결제는 제공자와 상품 정책이 확정되기 전 실제 청구를 발생시키지 않도록 Premium UI와 entitlement 경계까지만 안전하게 구성되어 있습니다.
+
+## Google 로그인
+
+1. Google Cloud Console에서 OAuth 2.0 웹 클라이언트를 만듭니다.
+2. 승인된 리디렉션 URI에 `https://make-one-smile-today.vercel.app/api/auth/callback/google`을 추가합니다.
+3. `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`을 Vercel Production/Preview에 설정합니다.
+4. 로컬 환경에는 `http://localhost:3000/api/auth/callback/google`도 등록하고 `.env.local`에 값을 넣습니다.
+
+Google 환경변수가 없으면 로그인 버튼만 비활성화되고 비회원 체험과 기존 기능은 그대로 동작합니다. Secret은 브라우저 번들 또는 Git 저장소에 포함되지 않습니다.
 
 ## 기술 스택
 
@@ -141,8 +162,11 @@ src/
 └── types/                  # 애플리케이션 타입
 ```
 
-## 이후 서비스 연동 위치
+## 스마트 서비스 경계
 
-- OpenAI: `src/services/ai.ts`의 `recommendSmileIdea` 구현만 서버 Route Handler 호출로 교체합니다. API 키는 클라이언트에 노출하지 않습니다.
-- 개인 Neon 저장: 인증 도입 후 `daily_mission_completions`, `daily_journals`, `user_points`, `user_badges` 테이블을 `src/db/schema.ts`에 추가하고 `src/db/migrations`로 배포합니다.
-- 저장 API: 사용자 세션을 검증하는 `src/app/api/daily/*` Route Handler에서 Drizzle을 호출하고 `src/services/daily-storage.ts`와 동일한 인터페이스로 연결합니다.
+- AI: `src/services/ai.ts` → `src/app/api/ai/coach/route.ts`로 연결되며 API 키는 서버에서만 읽습니다. 키가 없으면 무료 로컬 스트리밍 응답을 사용합니다.
+- 사용자 저장: `src/app/api/activity/sync/route.ts`가 세션을 검증하고 로컬 활동과 Neon 데이터를 병합합니다.
+- 가족·친구: `src/app/api/family`와 `src/app/api/friends`가 초대 코드와 관계를 사용자 ID 기준으로 처리합니다.
+- 리포트: `src/app/api/reports/weekly`가 주간 데이터를 날짜 키로 한 번 생성해 재사용합니다.
+- Premium: `users.plan` entitlement를 서버에서 확인합니다. 실제 결제 연결 시 검증된 결제 Webhook만 이 값을 변경해야 합니다.
+- 백그라운드 Push: Service Worker의 push 수신 구조는 준비되어 있습니다. 앱이 완전히 종료된 상태의 원격 Push는 향후 VAPID 구독 저장소와 예약 전송 작업을 연결합니다.

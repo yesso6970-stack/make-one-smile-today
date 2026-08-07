@@ -13,6 +13,7 @@ import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { Header } from "@/components/layout/header";
 import { DailyMissionCard } from "@/components/mission/daily-mission-card";
 import { PointsCard } from "@/components/points/points-card";
+import { PremiumHub } from "@/components/premium/premium-hub";
 import { DailyQuoteCard } from "@/components/quote/daily-quote-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useKoreanDate } from "@/hooks/use-korean-date";
@@ -134,6 +135,7 @@ function HomeScreen() {
       >
         <DailyMissionCard />
         <PointsCard />
+        <PremiumHub />
 
         <section className="from-primary via-primary shadow-warm relative overflow-hidden rounded-[2rem] bg-gradient-to-br to-[#ffe996] px-6 py-7">
           <div

@@ -10,6 +10,7 @@ import { PraiseSticker } from "@/components/cards/praise-sticker";
 import { AppShell } from "@/components/layout/app-shell";
 import { Button } from "@/components/ui/button";
 import { PRAISE_STICKERS } from "@/constants/praise-stickers";
+import { ShareAchievementCard } from "@/features/reports/share-achievement-card";
 import { useSmileStats } from "@/hooks/use-smile-stats";
 import { useFeedback } from "@/hooks/use-feedback";
 
@@ -59,6 +60,10 @@ export default function SuccessPage() {
         </motion.div>
 
         <PraiseSticker sticker={sticker} className="mt-5 w-full" />
+
+        <div className="mt-4 w-full text-left">
+          <ShareAchievementCard people={stats.mySmiles} streak={stats.streak} />
+        </div>
 
         <div className="relative mt-4 w-full">
           <AnimatePresence>

@@ -20,6 +20,7 @@ import {
 import { getLocalDateKey } from "@/lib/date";
 import {
   DAILY_ACTIVITY_STORAGE_KEY,
+  DAILY_ACTIVITY_CHANGED_EVENT,
   dailyActivityStorage,
 } from "@/services/daily-storage";
 import { fetchPraiseJournal, upsertPraiseJournal } from "@/services/journal";
@@ -61,6 +62,7 @@ function randomIndex(max: number): number {
 
 function persist(nextState: DailyActivityState): DailyActivityState {
   dailyActivityStorage.write(nextState);
+  window.dispatchEvent(new Event(DAILY_ACTIVITY_CHANGED_EVENT));
   return nextState;
 }
 

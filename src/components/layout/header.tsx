@@ -3,10 +3,12 @@
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface HeaderProps {
   title?: string;
@@ -19,6 +21,7 @@ export function Header({
 }: HeaderProps) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
+  const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -54,15 +57,29 @@ export function Header({
           )}
         </div>
       </div>
-      <Button asChild variant="ghost" size="icon">
-        <Link href="/settings" aria-label="화면 모드와 앱 설정 열기">
-          {mounted && resolvedTheme === "dark" ? (
-            <Sun className="h-[18px] w-[18px]" />
-          ) : (
-            <Moon className="h-[18px] w-[18px]" />
-          )}
+      <div className="flex items-center gap-1">
+        <Button asChild variant="ghost" size="icon">
+          <Link href="/settings" aria-label="화면 모드와 앱 설정 열기">
+            {mounted && resolvedTheme === "dark" ? (
+              <Sun className="h-[18px] w-[18px]" />
+            ) : (
+              <Moon className="h-[18px] w-[18px]" />
+            )}
+          </Link>
+        </Button>
+        <Link
+          href="/profile"
+          aria-label="내 프로필 열기"
+          className="rounded-full focus-visible:outline-3"
+        >
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={session?.user.image ?? undefined} alt="" />
+            <AvatarFallback>
+              {session?.user.name?.slice(0, 1) ?? "👤"}
+            </AvatarFallback>
+          </Avatar>
         </Link>
-      </Button>
+      </div>
     </header>
   );
 }

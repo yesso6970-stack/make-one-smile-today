@@ -1,4 +1,6 @@
 import type { AiSmileIdea, SmileRelationship } from "@/types/daily-activity";
+import type { CoachRequest, CoachStreamResult } from "@/types/ai-coach";
+import { getOrCreateDeviceId } from "@/lib/device-id";
 
 type MessageTemplate = Record<SmileRelationship, string>;
 
@@ -153,3 +155,44 @@ export async function recommendSmileIdea(
 }
 
 export const AI_DUMMY_IDEA_COUNT = DUMMY_AI_IDEAS.length;
+
+/** Streaming boundary. The server selects OpenAI or the zero-cost local coach. */
+export async function streamSmileCoach(
+  request: CoachRequest,
+): Promise<CoachStreamResult> {
+  const response = await fetch("/api/ai/coach", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-device-id": getOrCreateDeviceId(),
+    },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) {
+    const error = new Error(
+      response.status === 429 ? "DAILY_LIMIT" : "COACH_UNAVAILABLE",
+    );
+    throw error;
+  }
+  if (!response.body) throw new Error("COACH_STREAM_UNAVAILABLE");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  async function* read(): AsyncGenerator<string, void, undefined> {
+    try {
+      while (true) {
+        const result = await reader.read();
+        if (result.done) break;
+        const text = decoder.decode(result.value, { stream: true });
+        if (text) yield text;
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
+  const remainingHeader = response.headers.get("X-AI-Remaining");
+  return {
+    stream: read(),
+    mode: response.headers.get("X-AI-Mode") === "openai" ? "openai" : "local",
+    remaining: remainingHeader ? Number(remainingHeader) : null,
+  };
+}

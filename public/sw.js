@@ -1,8 +1,13 @@
-const CACHE_NAME = "make-one-smile-v3";
+const CACHE_NAME = "make-one-smile-v4";
 const APP_SHELL = [
   "/",
   "/target",
   "/settings",
+  "/profile",
+  "/coach",
+  "/reports",
+  "/family",
+  "/premium",
   "/about",
   "/offline",
   "/manifest.webmanifest",
@@ -53,4 +58,22 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("push", (event) => {
+  const payload = event.data?.json?.() || {};
+  event.waitUntil(
+    self.registration.showNotification(payload.title || "오늘 한 사람 웃기기", {
+      body: payload.body || "오늘 한 사람을 웃게 해볼까요? 😊",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: payload.tag || "smile-reminder",
+      data: { url: payload.url || "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(event.notification.data?.url || "/"));
 });

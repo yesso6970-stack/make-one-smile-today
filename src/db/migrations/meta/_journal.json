@@ -22,6 +22,13 @@
       "when": 1786078745137,
       "tag": "0002_add_praise_journal",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786092633196,
+      "tag": "0003_add_step4_smart_features",
+      "breakpoints": true
     }
   ]
 }

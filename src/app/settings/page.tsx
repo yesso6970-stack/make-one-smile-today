@@ -10,6 +10,7 @@ import {
   Smartphone,
   Sun,
   Vibrate,
+  Crown,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -115,6 +116,23 @@ export default function SettingsPage() {
               disabled={!hydrated}
               onCheckedChange={(value) => void updateNotifications(value)}
             />
+            {hydrated && preferences.notifications && (
+              <label className="flex items-center gap-3 py-3 text-sm font-black">
+                <span className="bg-surface-soft flex h-10 w-10 items-center justify-center rounded-2xl">
+                  ⏰
+                </span>
+                <span className="flex-1">매일 알림 시간</span>
+                <input
+                  type="time"
+                  aria-label="매일 알림 시간"
+                  value={preferences.reminderTime}
+                  onChange={(event) =>
+                    updatePreference("reminderTime", event.target.value)
+                  }
+                  className="bg-surface-soft rounded-xl px-3 py-2 text-xs font-black"
+                />
+              </label>
+            )}
             <SettingSwitch
               icon={Vibrate}
               label="진동"
@@ -136,6 +154,12 @@ export default function SettingsPage() {
             />
           </CardContent>
         </Card>
+
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/premium">
+            <Crown className="text-accent h-4 w-4" /> Smile Premium 보기
+          </Link>
+        </Button>
 
         <Card>
           <CardContent className="space-y-3 p-5">
