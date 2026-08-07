@@ -96,7 +96,9 @@ function HomeScreen() {
             aria-hidden="true"
           />
           <div className="relative flex items-center justify-between gap-3">
-            <p className="text-ink/60 text-sm font-bold">쌓여가는 미소</p>
+            <p className="text-ink/60 text-sm font-bold">
+              우리 모두가 만든 미소
+            </p>
             <span className="text-ink/55 flex items-center gap-1 text-[10px] font-extrabold">
               <CalendarDays className="h-3.5 w-3.5" /> {formatKoreanDate(now)}
             </span>

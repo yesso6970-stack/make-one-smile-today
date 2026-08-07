@@ -10,6 +10,9 @@ const LEGACY_STORAGE_KEY = "make-one-smile:stats:v1";
 const LEGACY_COMMUNITY_SEED = 153_294;
 const LEGACY_PERSONAL_SEED = 27;
 const LEGACY_STREAK_SEED = 8;
+const DEVICE_KEY = "make-one-smile:device:v1";
+const COMMUNITY_REFRESH_INTERVAL = 15_000;
+let fallbackDeviceId: string | null = null;
 
 export interface SmileStats {
   communitySmiles: number;
@@ -117,8 +120,57 @@ function saveStats(stats: SmileStats) {
   }
 }
 
+function getOrCreateDeviceId() {
+  try {
+    const existing = window.localStorage.getItem(DEVICE_KEY);
+    if (existing) return existing;
+
+    const deviceId = window.crypto.randomUUID();
+    window.localStorage.setItem(DEVICE_KEY, deviceId);
+    return deviceId;
+  } catch {
+    fallbackDeviceId ??= window.crypto.randomUUID();
+    return fallbackDeviceId;
+  }
+}
+
+function isCommunityResponse(value: unknown): value is { total: number } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).total === "number"
+  );
+}
+
 export function useSmileStats() {
   const [stats, setStats] = useState<SmileStats>(createInitialStats);
+
+  const updateCommunityTotal = useCallback((total: number) => {
+    setStats((current) => {
+      if (current.communitySmiles === total) return current;
+      const nextStats = { ...current, communitySmiles: total };
+      saveStats(nextStats);
+      return nextStats;
+    });
+  }, []);
+
+  const refreshCommunityTotal = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        const response = await fetch("/api/smiles", {
+          cache: "no-store",
+          signal,
+        });
+        if (!response.ok) return;
+
+        const data: unknown = await response.json();
+        if (isCommunityResponse(data)) updateCommunityTotal(data.total);
+      } catch {
+        // 오프라인일 때는 마지막으로 동기화한 숫자를 유지합니다.
+      }
+    },
+    [updateCommunityTotal],
+  );
 
   useEffect(() => {
     const savedStats = readStats();
@@ -140,14 +192,48 @@ export function useSmileStats() {
     };
 
     window.addEventListener("storage", syncStoredStats);
-    return () => window.removeEventListener("storage", syncStoredStats);
-  }, []);
+    const controller = new AbortController();
+    void refreshCommunityTotal(controller.signal);
+
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refreshCommunityTotal();
+    }, COMMUNITY_REFRESH_INTERVAL);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refreshCommunityTotal();
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      controller.abort();
+      window.clearInterval(interval);
+      window.removeEventListener("storage", syncStoredStats);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, [refreshCommunityTotal]);
+
+  const registerCommunitySmile = useCallback(async () => {
+    try {
+      const response = await fetch("/api/smiles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceId: getOrCreateDeviceId() }),
+      });
+      if (!response.ok) return;
+
+      const data: unknown = await response.json();
+      if (isCommunityResponse(data)) updateCommunityTotal(data.total);
+    } catch {
+      // 네트워크 복구 후 다음 조회에서 공용 합계를 다시 동기화합니다.
+    }
+  }, [updateCommunityTotal]);
 
   const registerSmile = useCallback(() => {
     setStats((current) => {
       const today = getLocalDateKey();
       const yesterday = getYesterdayDateKey();
       const alreadySucceededToday = current.lastSuccessDate === today;
+      if (alreadySucceededToday) return current;
+
       const continuedFromYesterday = current.lastSuccessDate === yesterday;
       const nextSticker =
         PRAISE_STICKERS[current.mySmiles % PRAISE_STICKERS.length];
@@ -156,13 +242,9 @@ export function useSmileStats() {
         : [...current.earnedStickerIds, nextSticker.id];
 
       const nextStats: SmileStats = {
-        communitySmiles: current.communitySmiles + 1,
+        communitySmiles: current.communitySmiles,
         mySmiles: current.mySmiles + 1,
-        streak: alreadySucceededToday
-          ? current.streak
-          : continuedFromYesterday
-            ? current.streak + 1
-            : 1,
+        streak: continuedFromYesterday ? current.streak + 1 : 1,
         lastSuccessDate: today,
         earnedStickerIds,
         lastStickerId: nextSticker.id,
@@ -171,7 +253,9 @@ export function useSmileStats() {
       saveStats(nextStats);
       return nextStats;
     });
-  }, []);
+
+    void registerCommunitySmile();
+  }, [registerCommunitySmile]);
 
   return { stats, registerSmile };
 }

@@ -43,3 +43,7 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Local agent integration helpers
+.agents/
+skills-lock.json
