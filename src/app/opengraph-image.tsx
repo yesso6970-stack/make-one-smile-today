@@ -108,16 +108,21 @@ export default function OpenGraphImage() {
             viewBox="0 0 210 210"
             width="210"
           >
-            <circle cx="42" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
-            <circle cx="168" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
+            <circle cx="37" cy="130" fill="#FFB6A3" opacity="0.72" r="18" />
+            <circle cx="173" cy="130" fill="#FFB6A3" opacity="0.72" r="18" />
             <path d="M39 82 Q59 51 79 82 Q59 68 39 82 Z" fill="#333333" />
             <path d="M131 82 Q151 51 171 82 Q151 68 131 82 Z" fill="#333333" />
             <path
-              d="M52 124 Q105 181 158 124"
-              fill="none"
-              stroke="#333333"
-              strokeLinecap="round"
-              strokeWidth="17"
+              d="M45 116 Q105 150 165 116 Q159 188 105 190 Q51 188 45 116 Z"
+              fill="#333333"
+            />
+            <path
+              d="M60 123 Q105 145 150 123 Q145 148 105 151 Q65 148 60 123 Z"
+              fill="#FFFDF8"
+            />
+            <path
+              d="M75 171 Q105 148 135 171 Q125 186 105 188 Q85 186 75 171 Z"
+              fill="#FF7F72"
             />
           </svg>
         </div>
