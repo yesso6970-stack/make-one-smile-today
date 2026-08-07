@@ -5,6 +5,8 @@ import { APP_NAME } from "@/constants/app";
 export const alt = "Make One Smile Today — 오늘 한 사람 웃기기";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /** Social preview used by KakaoTalk, Facebook, LinkedIn and other messengers. */
 export default function OpenGraphImage() {
@@ -108,20 +110,8 @@ export default function OpenGraphImage() {
           >
             <circle cx="42" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
             <circle cx="168" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
-            <path
-              d="M45 80 Q59 61 73 80"
-              fill="none"
-              stroke="#333333"
-              strokeLinecap="round"
-              strokeWidth="13"
-            />
-            <path
-              d="M137 80 Q151 61 165 80"
-              fill="none"
-              stroke="#333333"
-              strokeLinecap="round"
-              strokeWidth="13"
-            />
+            <path d="M39 82 Q59 51 79 82 Q59 68 39 82 Z" fill="#333333" />
+            <path d="M131 82 Q151 51 171 82 Q151 68 131 82 Z" fill="#333333" />
             <path
               d="M52 124 Q105 181 158 124"
               fill="none"
