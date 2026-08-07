@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #fffdf8;
+  --surface: #ffffff;
+  --surface-soft: #fff9e9;
+  --foreground: #333333;
+  --muted: #807b70;
+  --border: #eee9de;
+  --primary: #ffd54f;
+  --accent: #ffb300;
+  --success: #4caf50;
+  --shadow: 0 16px 40px rgba(89, 72, 20, 0.09);
+}
+
+.dark {
+  --background: #171612;
+  --surface: #22211c;
+  --surface-soft: #2b281d;
+  --foreground: #f7f3e9;
+  --muted: #aaa498;
+  --border: #38352d;
+  --primary: #f4c842;
+  --accent: #ffb300;
+  --success: #6acb6e;
+  --shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
+  --shadow-warm: var(--shadow);
+  --shadow-button: 0 12px 24px rgba(255, 179, 0, 0.25);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: #f2efe7;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 213, 79, 0.16),
+      transparent 28rem
+    ),
+    var(--background);
+  color: var(--foreground);
+  font-family:
+    "Pretendard Variable",
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(255, 179, 0, 0.55);
+  outline-offset: 3px;
+}
+::selection {
+  background: var(--primary);
+  color: #333333;
+}
+
+.app-shell {
+  box-shadow: 0 0 60px rgba(80, 68, 29, 0.08);
+}
+
+.splash-orb {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  filter: blur(1px);
+}
+.splash-orb-left {
+  left: -4rem;
+  top: 10%;
+  width: 11rem;
+  height: 11rem;
+}
+.splash-orb-right {
+  right: -3rem;
+  bottom: 12%;
+  width: 9rem;
+  height: 9rem;
+}
+
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
