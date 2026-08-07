@@ -100,38 +100,36 @@ export default function OpenGraphImage() {
             width: 260,
           }}
         >
-          <div
-            style={{
-              background: "#333333",
-              borderRadius: "50%",
-              height: 24,
-              left: 65,
-              position: "absolute",
-              top: 72,
-              width: 24,
-            }}
-          />
-          <div
-            style={{
-              background: "#333333",
-              borderRadius: "50%",
-              height: 24,
-              position: "absolute",
-              right: 65,
-              top: 72,
-              width: 24,
-            }}
-          />
-          <div
-            style={{
-              borderBottom: "22px solid #333333",
-              borderRadius: "0 0 100px 100px",
-              bottom: 55,
-              height: 66,
-              position: "absolute",
-              width: 136,
-            }}
-          />
+          <svg
+            aria-hidden="true"
+            height="210"
+            viewBox="0 0 210 210"
+            width="210"
+          >
+            <circle cx="42" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
+            <circle cx="168" cy="130" fill="#FFD37D" opacity="0.8" r="18" />
+            <path
+              d="M45 80 Q59 61 73 80"
+              fill="none"
+              stroke="#333333"
+              strokeLinecap="round"
+              strokeWidth="13"
+            />
+            <path
+              d="M137 80 Q151 61 165 80"
+              fill="none"
+              stroke="#333333"
+              strokeLinecap="round"
+              strokeWidth="13"
+            />
+            <path
+              d="M52 124 Q105 181 158 124"
+              fill="none"
+              stroke="#333333"
+              strokeLinecap="round"
+              strokeWidth="17"
+            />
+          </svg>
         </div>
       </div>
     </div>,
