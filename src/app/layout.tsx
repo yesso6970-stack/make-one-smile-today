@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 import { AppProviders } from "@/components/providers/app-providers";
-import { APP_NAME, APP_URL } from "@/constants/app";
+import { APP_NAME, APP_SHARE_URL, APP_URL } from "@/constants/app";
 
 import "./globals.css";
 
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   },
   description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
   applicationName: APP_NAME,
+  alternates: { canonical: APP_URL },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
     type: "website",
     locale: "ko_KR",
-    url: "/",
+    url: APP_SHARE_URL,
     siteName: APP_NAME,
   },
   twitter: {

@@ -12,7 +12,7 @@ import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { APP_NAME, APP_URL } from "@/constants/app";
+import { APP_NAME, APP_SHARE_URL } from "@/constants/app";
 import { createContextualCard } from "@/constants/contextual-cards";
 import { SMILE_CARDS } from "@/constants/dummy-data";
 import { TARGETS } from "@/constants/targets";
@@ -67,7 +67,7 @@ function SmileCardContent() {
     const shareData = {
       title: APP_NAME,
       text: "오늘, 한 사람을 웃게 해볼까요? 😊",
-      url: APP_URL,
+      url: APP_SHARE_URL,
     };
 
     if (navigator.share) {
