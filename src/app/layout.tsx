@@ -2,41 +2,36 @@ import type { Metadata, Viewport } from "next";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 import { AppProviders } from "@/components/providers/app-providers";
+import { APP_NAME, APP_URL } from "@/constants/app";
 
 import "./globals.css";
 
-const deploymentUrl =
-  process.env.NEXT_PUBLIC_APP_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
-
 export const metadata: Metadata = {
-  metadataBase: new URL(deploymentUrl),
+  metadataBase: new URL(APP_URL),
   title: {
-    default: "Make One Smile Today",
-    template: "%s | Make One Smile Today",
+    default: APP_NAME,
+    template: `%s | ${APP_NAME}`,
   },
   description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
-  applicationName: "Make One Smile Today",
+  applicationName: APP_NAME,
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Make One Smile Today",
+    title: APP_NAME,
   },
   formatDetection: { telephone: false },
   openGraph: {
-    title: "Make One Smile Today",
+    title: APP_NAME,
     description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
     type: "website",
     locale: "ko_KR",
     url: "/",
-    siteName: "Make One Smile Today",
+    siteName: APP_NAME,
   },
   twitter: {
     card: "summary",
-    title: "Make One Smile Today",
+    title: APP_NAME,
     description: "오늘, 한 사람을 웃게 해볼까요? 😊",
   },
 };

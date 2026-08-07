@@ -12,6 +12,7 @@ import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { APP_NAME, APP_URL } from "@/constants/app";
 import { createContextualCard } from "@/constants/contextual-cards";
 import { SMILE_CARDS } from "@/constants/dummy-data";
 import { TARGETS } from "@/constants/targets";
@@ -63,11 +64,10 @@ function SmileCardContent() {
   };
 
   const shareApp = async () => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
     const shareData = {
-      title: "Make One Smile Today",
+      title: APP_NAME,
       text: "오늘, 한 사람을 웃게 해볼까요? 😊",
-      url: appUrl,
+      url: APP_URL,
     };
 
     if (navigator.share) {
