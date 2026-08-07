@@ -1,17 +1,125 @@
-import type { AiSmileIdea } from "@/types/daily-activity";
+import type { AiSmileIdea, SmileRelationship } from "@/types/daily-activity";
 
-const DUMMY_AI_IDEAS = [
-  "{상대}, 오늘도 제 편이 되어줘서 고마워요. 덕분에 저는 참 든든하고 행복해요. 😊",
-  "{상대}, 웃는 모습이 제일 예쁜 거 알고 계세요? 오늘은 제가 더 많이 웃게 해드릴게요!",
-  "{상대}, 오늘의 최고 멋진 사람 상을 드립니다! 이유는 그냥 존재만으로 힘이 되어주기 때문이에요. 🏆",
-  "{상대}, 혹시 피곤함이 말을 걸면 전해 주세요. 제가 오늘 웃음으로 혼내주겠다고요! 😄",
-  "{상대}, 함께했던 순간을 떠올리니 저도 모르게 웃게 돼요. 앞으로도 재미있는 추억 많이 만들어요.",
-  "{상대}, 오늘 하루도 정말 수고했어요. 지금 이 순간만큼은 걱정을 내려놓고 환하게 웃어도 좋아요.",
-  "{상대}, 제 하루에 따뜻함을 더해주는 사람이 바로 당신이에요. 늘 고맙고 많이 아껴요. 💛",
-  "{상대}, 긴급 속보입니다! 오늘도 당신의 다정함 덕분에 주변 사람들의 행복 지수가 올라갔습니다. 📢",
-  "{상대}, 맛있는 것 먹고 재미있는 이야기 나누면서 오늘의 피곤함을 함께 웃어넘겨요!",
-  "{상대}, 오늘 거울을 보면 꼭 웃어주세요. 제가 좋아하는 멋진 사람이 바로 거기 있으니까요. ✨",
+type MessageTemplate = Record<SmileRelationship, string>;
+
+const DUMMY_AI_IDEAS: readonly MessageTemplate[] = [
+  {
+    senior:
+      "{상대}, 함께해 주셔서 정말 감사해요. 덕분에 오래 기억하고 싶은 행복한 시간이 되었어요. 😊",
+    junior:
+      "{상대}! 함께해 줘서 정말 고마워. 네 덕분에 오래 기억하고 싶은 행복한 시간이 됐어. 😊",
+    peer: "{상대}, 함께해 줘서 진짜 고마워! 네 덕분에 오래 기억할 행복한 추억이 하나 더 생겼어. 😊",
+  },
+  {
+    senior:
+      "{상대}, 환하게 웃으시는 모습이 참 보기 좋아요. 오늘도 기분 좋은 일이 가득하시길 바라요.",
+    junior:
+      "{상대}! 네가 환하게 웃는 모습을 보면 나도 참 행복해. 오늘도 많이 웃는 하루 보내자!",
+    peer: "{상대}, 네가 환하게 웃으면 나까지 기분이 좋아져! 오늘도 우리 많이 웃자.",
+  },
+  {
+    senior:
+      "{상대}, 늘 따뜻하게 챙겨 주셔서 감사해요. 저도 그 마음 잊지 않고 더 잘할게요. 💛",
+    junior:
+      "{상대}! 늘 따뜻한 마음을 보여 줘서 고마워. 나도 언제나 네 편이 되어 줄게. 💛",
+    peer: "{상대}, 늘 내 편이 되어 줘서 고마워. 나도 언제든 든든한 네 편이 되어 줄게! 💛",
+  },
+  {
+    senior:
+      "{상대}, 오늘도 정말 수고 많으셨어요. 잠시 걱정을 내려놓고 편안하게 쉬셨으면 좋겠어요.",
+    junior:
+      "{상대}! 오늘도 정말 수고했어. 이제 걱정은 잠깐 내려놓고 마음 편히 쉬어도 돼.",
+    peer: "{상대}, 오늘도 고생 많았어! 이제 걱정은 잠깐 내려놓고 푹 쉬자.",
+  },
+  {
+    senior:
+      "{상대}, 곁에 계셔 주시는 것만으로도 큰 힘이 돼요. 늘 감사하고 많이 존경해요.",
+    junior:
+      "{상대}! 네가 곁에 있어 주는 것만으로도 큰 힘이 돼. 늘 고맙고 많이 아껴.",
+    peer: "{상대}, 네가 곁에 있어 줘서 얼마나 든든한지 몰라. 늘 고맙고 많이 아낀다!",
+  },
+  {
+    senior:
+      "{상대}, 오늘의 멋진 분으로 선정되셨어요! 늘 주변을 따뜻하게 만들어 주시는 덕분이에요. 🏆",
+    junior:
+      "{상대}! 오늘의 멋진 사람으로 선정됐어! 네가 주변을 환하게 만들어 주기 때문이야. 🏆",
+    peer: "{상대}, 오늘의 최고 멋진 사람은 바로 너야! 이건 만장일치니까 이의 신청은 안 받아. 🏆",
+  },
+  {
+    senior:
+      "{상대}, 함께 나눈 이야기를 떠올리니 절로 미소가 나요. 앞으로도 좋은 추억 많이 만들어요.",
+    junior:
+      "{상대}! 함께 나눈 이야기를 떠올리면 절로 웃음이 나. 앞으로도 재미있는 추억 많이 만들자.",
+    peer: "{상대}, 우리 같이 웃었던 일 생각하니까 또 웃음이 난다. 앞으로도 재미있는 추억 많이 만들자!",
+  },
+  {
+    senior:
+      "{상대}, 오늘도 건강하고 행복하게 지내세요. 웃으실 일이 하나 더 생기도록 제가 응원할게요. ✨",
+    junior:
+      "{상대}! 오늘도 건강하고 행복하게 지내자. 네가 웃을 일이 더 많아지도록 늘 응원할게. ✨",
+    peer: "{상대}, 오늘도 건강하고 행복하자! 네가 웃을 일이 더 많아지도록 내가 열심히 응원할게. ✨",
+  },
+  {
+    senior:
+      "{상대}, 좋은 시간을 선물해 주셔서 감사해요. 다음에는 제가 더 즐거운 시간을 만들어 드릴게요.",
+    junior:
+      "{상대}! 좋은 시간을 함께 만들어 줘서 고마워. 다음에는 내가 더 재미있게 해 줄게!",
+    peer: "{상대}, 즐거운 시간 만들어 줘서 고마워! 다음번 웃음 담당은 내가 맡을게.",
+  },
+  {
+    senior:
+      "{상대}, 언제나 배울 점이 참 많으세요. 오늘도 따뜻한 모습을 보여 주셔서 감사해요.",
+    junior:
+      "{상대}! 오늘 보여 준 다정한 마음이 정말 멋졌어. 그런 네가 참 자랑스러워.",
+    peer: "{상대}, 오늘 네가 보여 준 다정함 정말 멋졌어. 역시 내가 사람 보는 눈은 정확하다니까!",
+  },
 ] as const;
+
+const SENIOR_KEYWORDS = [
+  "엄마",
+  "아빠",
+  "어머니",
+  "아버지",
+  "부모님",
+  "할머니",
+  "할아버지",
+  "선생님",
+  "어르신",
+  "상사",
+  "팀장님",
+  "부장님",
+  "사장님",
+] as const;
+
+const JUNIOR_KEYWORDS = [
+  "아들",
+  "딸",
+  "아이",
+  "손자",
+  "손녀",
+  "조카",
+  "동생",
+  "후배",
+  "학생",
+] as const;
+
+export function inferSmileRelationship(audience: string): SmileRelationship {
+  const normalized = audience.replaceAll(" ", "");
+  if (
+    ["아들에게", "딸에게", "아이에게", "후배에게", "동생에게"].some((keyword) =>
+      normalized.includes(keyword),
+    )
+  ) {
+    return "junior";
+  }
+  if (SENIOR_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
+    return "senior";
+  }
+  if (JUNIOR_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
+    return "junior";
+  }
+  return "peer";
+}
 
 function wait(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -23,19 +131,23 @@ function wait(milliseconds: number): Promise<void> {
  */
 export async function recommendSmileIdea(
   audience: string,
+  relationship: SmileRelationship | "auto" = "auto",
   previousIdeaId?: string,
 ): Promise<AiSmileIdea> {
   await wait(650);
 
-  const candidates = DUMMY_AI_IDEAS.map((message, index) => ({
-    id: `dummy-ai-${index + 1}`,
-    message,
+  const resolvedRelationship =
+    relationship === "auto" ? inferSmileRelationship(audience) : relationship;
+  const candidates = DUMMY_AI_IDEAS.map((templates, index) => ({
+    id: `dummy-ai-${index + 1}-${resolvedRelationship}`,
+    message: templates[resolvedRelationship],
   })).filter((idea) => idea.id !== previousIdeaId);
   const idea = candidates[Math.floor(Math.random() * candidates.length)];
-  const subject = audience.trim() || "그 사람";
+  const subject = audience.trim() || "소중한 사람";
 
   return {
     ...idea,
+    relationship: resolvedRelationship,
     message: idea.message.replace("{상대}", subject),
   };
 }

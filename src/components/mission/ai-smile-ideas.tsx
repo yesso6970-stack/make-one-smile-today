@@ -14,11 +14,21 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { copyText } from "@/lib/clipboard";
 import { recommendSmileIdea } from "@/services/ai";
-import type { AiSmileIdea } from "@/types/daily-activity";
+import type { AiSmileIdea, SmileRelationship } from "@/types/daily-activity";
+
+type RelationshipSelection = SmileRelationship | "auto";
+
+const RELATIONSHIP_LABELS: Record<SmileRelationship, string> = {
+  senior: "윗사람께 · 존댓말",
+  junior: "아랫사람에게 · 편한 말",
+  peer: "친구에게 · 친근한 말",
+};
 
 export function AiSmileIdeas() {
   const [audience, setAudience] = useState("");
   const [idea, setIdea] = useState<AiSmileIdea | null>(null);
+  const [relationship, setRelationship] =
+    useState<RelationshipSelection>("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIdeaId, setCopiedIdeaId] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -51,7 +61,11 @@ export function AiSmileIdeas() {
 
     setIsLoading(true);
     try {
-      const nextIdea = await recommendSmileIdea(audience, idea?.id);
+      const nextIdea = await recommendSmileIdea(
+        audience,
+        relationship,
+        idea?.id,
+      );
       setIdea(nextIdea);
       setCopiedIdeaId(null);
       toast.success("추천 문구가 도착했어요", {
@@ -86,27 +100,58 @@ export function AiSmileIdeas() {
         </div>
       </div>
 
-      <form className="mt-4 flex gap-2" onSubmit={handleSubmit}>
+      <form className="mt-4" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="smile-audience">
           웃게 하고 싶은 사람
         </label>
-        <input
-          id="smile-audience"
-          value={audience}
-          onChange={(event) => setAudience(event.target.value)}
-          placeholder="예: 60대 부모님"
-          maxLength={40}
-          className="border-border bg-surface text-ink placeholder:text-muted/60 min-w-0 flex-1 rounded-2xl border px-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#9b84cf]/40"
-        />
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="px-4"
-          aria-label={idea ? "다른 문구 추천받기" : "AI 추천받기"}
-        >
-          <SendHorizontal className="h-4 w-4" />
-          {idea ? "다시 추천" : "추천"}
-        </Button>
+        <div className="flex gap-2">
+          <input
+            id="smile-audience"
+            value={audience}
+            onChange={(event) => {
+              setAudience(event.target.value);
+              setIdea(null);
+            }}
+            placeholder="예: 아들 예준, 어머니, 친구 민지"
+            maxLength={40}
+            className="border-border bg-surface text-ink placeholder:text-muted/60 min-w-0 flex-1 rounded-2xl border px-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#9b84cf]/40"
+          />
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="px-4"
+            aria-label={idea ? "다른 문구 추천받기" : "AI 추천받기"}
+          >
+            <SendHorizontal className="h-4 w-4" />
+            {idea ? "다시 추천" : "추천"}
+          </Button>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <label
+            htmlFor="smile-relationship"
+            className="text-muted shrink-0 text-xs font-extrabold"
+          >
+            누구에게 보내나요?
+          </label>
+          <select
+            id="smile-relationship"
+            value={relationship}
+            onChange={(event) => {
+              setRelationship(event.target.value as RelationshipSelection);
+              setIdea(null);
+            }}
+            className="border-border bg-surface text-ink min-w-0 flex-1 rounded-xl border px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-[#9b84cf]/40"
+          >
+            <option value="auto">자동으로 말투 맞춤</option>
+            <option value="senior">윗사람께 · 존댓말</option>
+            <option value="junior">아랫사람에게 · 편한 말</option>
+            <option value="peer">친구에게 · 친근한 말</option>
+          </select>
+        </div>
+        <p className="text-muted mt-2 text-[10px] leading-4 font-semibold">
+          이름이나 호칭만 입력하고 관계를 고르면 자연스러운 어법으로 만들어요.
+        </p>
       </form>
 
       <div className="mt-4 min-h-24" aria-live="polite">
@@ -149,6 +194,9 @@ export function AiSmileIdeas() {
                 <MessageCircleHeart className="h-4 w-4" aria-hidden="true" />
                 그대로 복사해 보내는 추천 문구
               </p>
+              <span className="mt-2 inline-flex rounded-full bg-white/65 px-2.5 py-1 text-[10px] font-black text-[#8067bd] dark:bg-white/10 dark:text-[#dfd2ff]">
+                {RELATIONSHIP_LABELS[idea.relationship]}
+              </span>
               <blockquote className="mt-3 text-[15px] leading-7 font-bold">
                 “{idea.message}”
               </blockquote>

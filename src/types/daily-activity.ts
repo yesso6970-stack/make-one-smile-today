@@ -48,7 +48,10 @@ export interface MissionCompletionResult {
 export interface AiSmileIdea {
   id: string;
   message: string;
+  relationship: SmileRelationship;
 }
+
+export type SmileRelationship = "senior" | "junior" | "peer";
 
 export interface PraiseJournalEntry {
   date: string;
