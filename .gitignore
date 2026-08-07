@@ -35,14 +35,11 @@ yarn-error.log*
 !.env.example
 
 # vercel
-.vercel
+/.vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.vercel
-.env*
 
 # Local agent integration helpers
 .agents/

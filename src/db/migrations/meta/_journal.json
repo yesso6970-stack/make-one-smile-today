@@ -8,6 +8,13 @@
       "when": 1786066485343,
       "tag": "0000_create_smile_events",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786068071958,
+      "tag": "0001_add_smile_counter",
+      "breakpoints": true
     }
   ]
 }
