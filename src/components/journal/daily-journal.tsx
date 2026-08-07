@@ -13,6 +13,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useDailyActivity } from "@/hooks/use-daily-activity";
 
 const MAX_LENGTH = 200;
@@ -140,9 +141,12 @@ export function DailyJournal() {
             ))}
           </div>
         ) : (
-          <p className="text-muted mt-2 text-xs font-semibold">
-            첫 칭찬 기록을 남기면 이곳에 차곡차곡 모여요.
-          </p>
+          <div className="mt-3">
+            <EmptyState
+              title="아직 칭찬 기록이 없어요"
+              description="오늘 첫 번째 다정한 순간을 적어보세요."
+            />
+          </div>
         )}
       </div>
     </motion.section>

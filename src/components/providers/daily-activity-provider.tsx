@@ -167,10 +167,13 @@ export function DailyActivityProvider({
       if (document.visibilityState === "visible") void syncRemoteJournal();
     };
     document.addEventListener("visibilitychange", syncWhenVisible);
+    const syncWhenOnline = () => void syncRemoteJournal();
+    window.addEventListener("online", syncWhenOnline);
     return () => {
       controller.abort();
       window.removeEventListener("storage", syncAcrossTabs);
       document.removeEventListener("visibilitychange", syncWhenVisible);
+      window.removeEventListener("online", syncWhenOnline);
     };
   }, [todayKey]);
 

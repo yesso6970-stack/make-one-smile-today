@@ -52,6 +52,13 @@
 
 html {
   background: #f2efe7;
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  background: #10100e;
+  color-scheme: dark;
 }
 
 body {
@@ -80,7 +87,10 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   outline: 3px solid rgba(255, 179, 0, 0.55);
   outline-offset: 3px;
 }
@@ -91,6 +101,7 @@ a:focus-visible {
 
 .app-shell {
   box-shadow: 0 0 60px rgba(80, 68, 29, 0.08);
+  isolation: isolate;
 }
 
 .splash-orb {
@@ -117,6 +128,16 @@ a:focus-visible {
 }
 .safe-bottom {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    margin-block: 1rem;
+    min-height: calc(100dvh - 2rem);
+    overflow: clip;
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+  }
 }
 
 .journal-paper {

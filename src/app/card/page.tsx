@@ -107,7 +107,7 @@ function SmileCardContent() {
   return (
     <AppShell>
       <Header title="오늘의 미소 카드" showBack />
-      <main className="flex flex-1 flex-col px-5 pt-4 pb-7">
+      <main id="main-content" className="flex flex-1 flex-col px-5 pt-4 pb-7">
         <div className="mb-4 flex items-center justify-between">
           <Badge variant="soft">
             {target.emoji} {target.label}에게
@@ -179,7 +179,10 @@ export default function SmileCardPage() {
       fallback={
         <AppShell>
           <Header title="오늘의 미소 카드" showBack />
-          <main className="flex flex-1 items-center justify-center">
+          <main
+            id="main-content"
+            className="flex flex-1 items-center justify-center"
+          >
             <div className="bg-primary/15 h-80 w-[calc(100%-2.5rem)] animate-pulse rounded-[2rem]" />
           </main>
         </AppShell>

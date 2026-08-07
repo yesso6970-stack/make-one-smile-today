@@ -11,12 +11,14 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Button } from "@/components/ui/button";
 import { PRAISE_STICKERS } from "@/constants/praise-stickers";
 import { useSmileStats } from "@/hooks/use-smile-stats";
+import { useFeedback } from "@/hooks/use-feedback";
 
 const HEARTS = ["💛", "✨", "😊", "🧡", "🌼"];
 
 export default function SuccessPage() {
   const { stats } = useSmileStats();
   const [didSelfSmile, setDidSelfSmile] = useState(false);
+  const feedback = useFeedback();
   const sticker =
     PRAISE_STICKERS.find((item) => item.id === stats.lastStickerId) ??
     PRAISE_STICKERS[0];
@@ -24,7 +26,10 @@ export default function SuccessPage() {
   return (
     <AppShell className="overflow-hidden">
       <ConfettiEffect />
-      <main className="relative z-10 flex min-h-dvh flex-col items-center justify-center overflow-y-auto px-6 py-8 text-center">
+      <main
+        id="main-content"
+        className="relative z-10 flex min-h-dvh flex-col items-center justify-center overflow-y-auto px-6 py-8 text-center"
+      >
         <motion.div
           className="bg-primary/25 shadow-warm mb-4 flex h-24 w-24 items-center justify-center rounded-full text-6xl"
           initial={{ scale: 0, rotate: -20 }}
@@ -82,7 +87,10 @@ export default function SuccessPage() {
             variant={didSelfSmile ? "secondary" : "outline"}
             size="lg"
             className="w-full"
-            onClick={() => setDidSelfSmile(true)}
+            onClick={() => {
+              setDidSelfSmile(true);
+              feedback("success");
+            }}
           >
             <Heart
               className={

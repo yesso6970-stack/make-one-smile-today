@@ -21,6 +21,25 @@
 - Drizzle ORM / Neon PostgreSQL / `node-postgres`
 - Vercel Functions / Fluid compute connection pool
 
+## 출시 품질 기능
+
+- 라이트·다크·시스템 모드 선택 및 기기별 설정 유지
+- 설치 가능한 Web App Manifest, maskable 아이콘, iOS 설치 안내, Safe Area 대응
+- Service Worker 앱 셸·정적 자원 캐시와 오프라인 홈/미션/명언/캘린더/일지 조회
+- 온라인 복귀 시 개인 일지 자동 재동기화
+- 공통 Skeleton, Toast, Empty State와 404·500·DB·AI·오프라인 오류 화면
+- 키보드 포커스, 본문 바로가기, ARIA 상태, 모션 감소 설정 대응
+- 개인정보 처리방침, 이용약관, 문의, 라이선스와 버전 정보
+
+Service Worker는 production 빌드에서만 등록됩니다. 로컬 오프라인 동작은 `npm run build && npm start`로 확인하세요. 개인 API 응답은 캐시하지 않으며, 서비스 워커는 문서와 앱 정적 자원만 저장합니다.
+
+### PWA 설치 확인
+
+1. production 또는 HTTPS 환경에서 앱을 엽니다.
+2. 설정에서 `홈 화면에 앱 설치`를 선택합니다.
+3. iOS Safari에서는 공유 메뉴의 `홈 화면에 추가`를 선택합니다.
+4. 설치 후 네트워크를 끄고 홈, 오늘의 미션, 명언, 캘린더와 저장된 일지를 확인합니다.
+
 ## 데이터베이스 아키텍처
 
 - `DATABASE_URL`: 앱 런타임이 사용하는 Neon pooled URL입니다. 호스트에 `-pooler`가 포함된 Vercel 연동 값을 사용합니다.

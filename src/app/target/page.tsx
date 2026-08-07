@@ -13,7 +13,7 @@ export default function TargetPage() {
   return (
     <AppShell>
       <Header title="누구를 웃게 할까요?" showBack />
-      <main className="flex-1 px-5 pt-7 pb-28">
+      <main id="main-content" className="flex-1 px-5 pt-7 pb-28">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

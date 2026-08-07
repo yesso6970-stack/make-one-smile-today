@@ -19,6 +19,18 @@ export const metadata: Metadata = {
   },
   description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
   applicationName: APP_NAME,
+  keywords: [
+    "웃음",
+    "칭찬",
+    "오늘의 미션",
+    "감정 기록",
+    "PWA",
+    "Make One Smile Today",
+  ],
+  authors: [{ name: "Make One Smile Today" }],
+  creator: "Make One Smile Today",
+  publisher: "Make One Smile Today",
+  category: "lifestyle",
   alternates: { canonical: APP_URL },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -27,6 +39,16 @@ export const metadata: Metadata = {
     title: APP_NAME,
   },
   formatDetection: { telephone: false },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icons/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
+  robots: { index: true, follow: true },
   openGraph: {
     title: APP_NAME,
     description: "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관",
@@ -39,7 +61,7 @@ export const metadata: Metadata = {
         url: APP_OG_IMAGE_URL,
         width: 1200,
         height: 630,
-        alt: "Make One Smile Today — 활짝 웃는 미소",
+        alt: "오늘 한 사람 웃기기 — 활짝 웃는 미소",
       },
     ],
   },

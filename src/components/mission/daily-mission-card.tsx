@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useDailyMission } from "@/hooks/use-daily-mission";
+import { useFeedback } from "@/hooks/use-feedback";
 
 import { MissionCardSkeleton } from "./mission-card-skeleton";
 import { MissionCategoryBadge } from "./mission-category-badge";
@@ -16,12 +17,14 @@ export function DailyMissionCard() {
     useDailyMission();
   const [celebrating, setCelebrating] = useState(false);
   const reduceMotion = useReducedMotion();
+  const feedback = useFeedback();
 
   if (!hydrated) return <MissionCardSkeleton />;
 
   const handleComplete = () => {
     const result = completeMission();
     if (!result) return;
+    feedback("success");
     setCelebrating(true);
     window.setTimeout(() => setCelebrating(false), 1500);
     toast.success(`오늘의 미션 완료 · +${result.awardedPoints}P`, {
@@ -34,7 +37,10 @@ export function DailyMissionCard() {
 
   const handleReroll = () => {
     const next = rerollMission();
-    if (next) toast("새로운 미션을 준비했어요 🎲");
+    if (next) {
+      feedback("tap");
+      toast("새로운 미션을 준비했어요 🎲");
+    }
   };
 
   return (

@@ -1,23 +1,24 @@
 "use client";
 
-import { Home, SmilePlus } from "lucide-react";
+import { Home, Settings, SmilePlus } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
 interface BottomNavigationProps {
-  active: "home" | "target";
+  active: "home" | "target" | "settings";
 }
 
 const items = [
   { id: "home", href: "/", label: "홈", icon: Home },
   { id: "target", href: "/target", label: "웃기기", icon: SmilePlus },
+  { id: "settings", href: "/settings", label: "설정", icon: Settings },
 ] as const;
 
 export function BottomNavigation({ active }: BottomNavigationProps) {
   return (
     <nav
-      className="safe-bottom border-border/80 bg-surface/90 fixed bottom-0 left-1/2 z-30 flex w-full max-w-[480px] -translate-x-1/2 items-center justify-around border-t px-14 pt-2 backdrop-blur-xl"
+      className="safe-bottom border-border/80 bg-surface/90 fixed bottom-0 left-1/2 z-30 flex w-full max-w-[480px] -translate-x-1/2 items-center justify-around border-t px-5 pt-2 backdrop-blur-xl"
       aria-label="주요 메뉴"
     >
       {items.map(({ id, href, label, icon: Icon }) => {

@@ -3,7 +3,9 @@
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
+import { OfflineBanner } from "@/components/pwa/offline-banner";
 import { useServiceWorker } from "@/hooks/use-service-worker";
+import { AppPreferencesProvider } from "@/providers/app-preferences-provider";
 
 import { DailyActivityProvider } from "./daily-activity-provider";
 
@@ -23,8 +25,16 @@ export function AppProviders({
       disableTransitionOnChange
     >
       <PwaRegistration />
-      <DailyActivityProvider>{children}</DailyActivityProvider>
-      <Toaster position="top-center" richColors closeButton />
+      <AppPreferencesProvider>
+        <DailyActivityProvider>{children}</DailyActivityProvider>
+      </AppPreferencesProvider>
+      <OfflineBanner />
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{ className: "font-sans" }}
+      />
     </ThemeProvider>
   );
 }

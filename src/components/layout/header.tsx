@@ -2,6 +2,7 @@
 
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -17,13 +18,13 @@ export function Header({
   showBack = false,
 }: HeaderProps) {
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="safe-top border-border/70 flex h-[72px] shrink-0 items-center justify-between border-b px-5">
+    <header className="safe-top border-border/70 flex min-h-[72px] shrink-0 items-center justify-between border-b px-5 pb-3">
       <div className="flex min-w-0 items-center gap-3">
         {showBack ? (
           <Button
@@ -53,21 +54,14 @@ export function Header({
           )}
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        aria-label={
-          mounted && resolvedTheme === "dark"
-            ? "라이트 모드로 전환"
-            : "다크 모드로 전환"
-        }
-      >
-        {mounted && resolvedTheme === "dark" ? (
-          <Sun className="h-[18px] w-[18px]" />
-        ) : (
-          <Moon className="h-[18px] w-[18px]" />
-        )}
+      <Button asChild variant="ghost" size="icon">
+        <Link href="/settings" aria-label="화면 모드와 앱 설정 열기">
+          {mounted && resolvedTheme === "dark" ? (
+            <Sun className="h-[18px] w-[18px]" />
+          ) : (
+            <Moon className="h-[18px] w-[18px]" />
+          )}
+        </Link>
       </Button>
     </header>
   );

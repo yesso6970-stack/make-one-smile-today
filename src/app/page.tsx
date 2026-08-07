@@ -2,27 +2,61 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, Heart } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 import { AnimatedCounter } from "@/components/animations/animated-counter";
-import { BadgeShowcase } from "@/components/badge/badge-showcase";
 import { AnimatedButton } from "@/components/buttons/animated-button";
-import { SmileCalendar } from "@/components/calendar/smile-calendar";
 import { CounterCard } from "@/components/cards/counter-card";
-import { StickerShelf } from "@/components/cards/sticker-shelf";
-import { DailyJournal } from "@/components/journal/daily-journal";
 import { AppShell } from "@/components/layout/app-shell";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { Header } from "@/components/layout/header";
-import { AiSmileIdeas } from "@/components/mission/ai-smile-ideas";
 import { DailyMissionCard } from "@/components/mission/daily-mission-card";
 import { PointsCard } from "@/components/points/points-card";
 import { DailyQuoteCard } from "@/components/quote/daily-quote-card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useKoreanDate } from "@/hooks/use-korean-date";
 import { useSmileStats } from "@/hooks/use-smile-stats";
 import { formatKoreanDate } from "@/lib/date";
 
 const SPLASH_DURATION = 2000;
+
+const sectionLoading = () => <Skeleton className="h-64 rounded-[2rem]" />;
+const SmileCalendar = dynamic(
+  () =>
+    import("@/components/calendar/smile-calendar").then(
+      (module) => module.SmileCalendar,
+    ),
+  { loading: sectionLoading },
+);
+const DailyJournal = dynamic(
+  () =>
+    import("@/components/journal/daily-journal").then(
+      (module) => module.DailyJournal,
+    ),
+  { loading: sectionLoading },
+);
+const AiSmileIdeas = dynamic(
+  () =>
+    import("@/components/mission/ai-smile-ideas").then(
+      (module) => module.AiSmileIdeas,
+    ),
+  { loading: sectionLoading },
+);
+const BadgeShowcase = dynamic(
+  () =>
+    import("@/components/badge/badge-showcase").then(
+      (module) => module.BadgeShowcase,
+    ),
+  { loading: sectionLoading },
+);
+const StickerShelf = dynamic(
+  () =>
+    import("@/components/cards/sticker-shelf").then(
+      (module) => module.StickerShelf,
+    ),
+  { loading: sectionLoading },
+);
 
 function SplashScreen() {
   return (
@@ -49,10 +83,10 @@ function SplashScreen() {
         transition={{ delay: 0.25, duration: 0.5 }}
       >
         <h1 className="text-ink text-2xl font-extrabold tracking-tight">
-          Make One Smile Today
+          오늘 한 사람 웃기기
         </h1>
         <p className="text-ink/55 mt-2 text-sm font-semibold tracking-wide">
-          오늘 한 사람 웃기기
+          Make One Smile Today
         </p>
       </motion.div>
       <motion.p
@@ -92,6 +126,7 @@ function HomeScreen() {
     <AppShell>
       <Header />
       <motion.main
+        id="main-content"
         className="flex flex-1 flex-col gap-4 px-5 pt-6 pb-28"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
