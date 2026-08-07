@@ -22,10 +22,13 @@ import {
   DAILY_ACTIVITY_STORAGE_KEY,
   dailyActivityStorage,
 } from "@/services/daily-storage";
+import { fetchPraiseJournal, upsertPraiseJournal } from "@/services/journal";
 import type {
   DailyActivityState,
   DailyMission,
+  JournalSyncStatus,
   MissionCompletionResult,
+  PraiseJournalEntry,
 } from "@/types/daily-activity";
 
 export interface DailyActivityContextValue {
@@ -36,9 +39,10 @@ export interface DailyActivityContextValue {
   isTodayCompleted: boolean;
   streak: number;
   hydrated: boolean;
+  journalSyncStatus: JournalSyncStatus;
   completeMission: () => MissionCompletionResult | null;
   rerollMission: () => DailyMission | null;
-  saveJournal: (content: string) => void;
+  saveJournal: (content: string) => Promise<boolean>;
 }
 
 export const DailyActivityContext =
@@ -60,6 +64,14 @@ function persist(nextState: DailyActivityState): DailyActivityState {
   return nextState;
 }
 
+function entriesToRecord(
+  entries: readonly PraiseJournalEntry[],
+): Record<string, string> {
+  return Object.fromEntries(
+    entries.map((entry) => [entry.date, entry.content]),
+  );
+}
+
 export function DailyActivityProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -67,6 +79,8 @@ export function DailyActivityProvider({
     createInitialDailyActivityState,
   );
   const [hydrated, setHydrated] = useState(false);
+  const [journalSyncStatus, setJournalSyncStatus] =
+    useState<JournalSyncStatus>("idle");
   const todayKey = getLocalDateKey();
 
   useEffect(() => {
@@ -109,6 +123,36 @@ export function DailyActivityProvider({
 
     setState(persist(initialized));
     setHydrated(true);
+    const controller = new AbortController();
+
+    const syncRemoteJournal = async () => {
+      try {
+        const entries = await fetchPraiseJournal(controller.signal);
+        const remoteJournal = entriesToRecord(entries);
+        setState((current) =>
+          persist({
+            ...current,
+            journalByDate: { ...current.journalByDate, ...remoteJournal },
+          }),
+        );
+
+        const missingRemoteEntries = Object.entries(
+          initialized.journalByDate,
+        ).filter(([date]) => remoteJournal[date] === undefined);
+        await Promise.allSettled(
+          missingRemoteEntries.map(([date, content]) =>
+            upsertPraiseJournal(date, content),
+          ),
+        );
+        setJournalSyncStatus("saved");
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          setJournalSyncStatus("offline");
+        }
+      }
+    };
+
+    void syncRemoteJournal();
 
     const syncAcrossTabs = (event: StorageEvent) => {
       if (event.key !== DAILY_ACTIVITY_STORAGE_KEY || event.newValue === null) {
@@ -119,7 +163,15 @@ export function DailyActivityProvider({
     };
 
     window.addEventListener("storage", syncAcrossTabs);
-    return () => window.removeEventListener("storage", syncAcrossTabs);
+    const syncWhenVisible = () => {
+      if (document.visibilityState === "visible") void syncRemoteJournal();
+    };
+    document.addEventListener("visibilitychange", syncWhenVisible);
+    return () => {
+      controller.abort();
+      window.removeEventListener("storage", syncAcrossTabs);
+      document.removeEventListener("visibilitychange", syncWhenVisible);
+    };
   }, [todayKey]);
 
   const todayMission = useMemo(() => {
@@ -205,8 +257,10 @@ export function DailyActivityProvider({
   }, [isTodayCompleted, state, todayKey]);
 
   const saveJournal = useCallback(
-    (content: string) => {
+    async (content: string) => {
       const normalized = content.trim().slice(0, 200);
+      if (!normalized) return false;
+      setJournalSyncStatus("saving");
       setState((current) =>
         persist({
           ...current,
@@ -216,6 +270,15 @@ export function DailyActivityProvider({
           },
         }),
       );
+
+      try {
+        await upsertPraiseJournal(todayKey, normalized);
+        setJournalSyncStatus("saved");
+        return true;
+      } catch {
+        setJournalSyncStatus("offline");
+        return false;
+      }
     },
     [todayKey],
   );
@@ -229,6 +292,7 @@ export function DailyActivityProvider({
       isTodayCompleted,
       streak,
       hydrated,
+      journalSyncStatus,
       completeMission,
       rerollMission,
       saveJournal,
@@ -241,6 +305,7 @@ export function DailyActivityProvider({
       isTodayCompleted,
       streak,
       hydrated,
+      journalSyncStatus,
       completeMission,
       rerollMission,
       saveJournal,

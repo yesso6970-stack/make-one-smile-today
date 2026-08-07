@@ -1,17 +1,13 @@
-import { createHash } from "node:crypto";
-
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb, reportDatabaseError } from "@/db";
 import { COMMUNITY_COUNTER_ID, smileCounters, smileEvents } from "@/db/schema";
 import { getLocalDateKey } from "@/lib/date";
+import { hashDeviceId } from "@/lib/server-device";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function json(data: Record<string, boolean | number>, status = 200) {
   return NextResponse.json(data, {
@@ -59,11 +55,11 @@ export async function POST(request: Request) {
     }
 
     const deviceId = (body as Record<string, unknown>).deviceId;
-    if (typeof deviceId !== "string" || !UUID_PATTERN.test(deviceId)) {
+    const deviceHash = hashDeviceId(deviceId);
+    if (!deviceHash) {
       return json({ error: true, total: 0 }, 400);
     }
 
-    const deviceHash = createHash("sha256").update(deviceId).digest("hex");
     const result = await getDb().transaction(async (transaction) => {
       const inserted = await transaction
         .insert(smileEvents)

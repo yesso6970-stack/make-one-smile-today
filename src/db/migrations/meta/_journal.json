@@ -15,6 +15,13 @@
       "when": 1786068071958,
       "tag": "0001_add_smile_counter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786078745137,
+      "tag": "0002_add_praise_journal",
+      "breakpoints": true
     }
   ]
 }

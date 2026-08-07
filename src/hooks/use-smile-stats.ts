@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { PRAISE_STICKERS } from "@/constants/praise-stickers";
+import { getOrCreateDeviceId } from "@/lib/device-id";
 import { getLocalDateKey, getYesterdayDateKey } from "@/lib/date";
 
 const STORAGE_KEY = "make-one-smile:stats:v2";
@@ -10,9 +11,7 @@ const LEGACY_STORAGE_KEY = "make-one-smile:stats:v1";
 const LEGACY_COMMUNITY_SEED = 153_294;
 const LEGACY_PERSONAL_SEED = 27;
 const LEGACY_STREAK_SEED = 8;
-const DEVICE_KEY = "make-one-smile:device:v1";
 const COMMUNITY_REFRESH_INTERVAL = 15_000;
-let fallbackDeviceId: string | null = null;
 
 export interface SmileStats {
   communitySmiles: number;
@@ -117,20 +116,6 @@ function saveStats(stats: SmileStats) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
   } catch {
     // 저장 공간이 차단된 환경에서도 현재 세션의 카운트는 정상 동작합니다.
-  }
-}
-
-function getOrCreateDeviceId() {
-  try {
-    const existing = window.localStorage.getItem(DEVICE_KEY);
-    if (existing) return existing;
-
-    const deviceId = window.crypto.randomUUID();
-    window.localStorage.setItem(DEVICE_KEY, deviceId);
-    return deviceId;
-  } catch {
-    fallbackDeviceId ??= window.crypto.randomUUID();
-    return fallbackDeviceId;
   }
 }
 

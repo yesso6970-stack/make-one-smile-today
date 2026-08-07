@@ -49,3 +49,11 @@ export interface AiSmileIdea {
   id: string;
   message: string;
 }
+
+export interface PraiseJournalEntry {
+  date: string;
+  content: string;
+  updatedAt: string;
+}
+
+export type JournalSyncStatus = "idle" | "saving" | "saved" | "offline";
