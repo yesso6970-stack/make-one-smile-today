@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export function Header({
-  title = "Make One Smile Today",
+  title = "오늘 한 사람 웃기기",
   showBack = false,
 }: HeaderProps) {
   const router = useRouter();
@@ -48,7 +48,7 @@ export function Header({
           </p>
           {!showBack && (
             <p className="text-muted mt-0.5 text-[10px] font-bold tracking-wide">
-              오늘 한 사람 웃기기
+              Make One Smile Today
             </p>
           )}
         </div>
