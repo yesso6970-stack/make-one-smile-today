@@ -5,7 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { PRAISE_STICKERS } from "@/constants/praise-stickers";
 import { getLocalDateKey, getYesterdayDateKey } from "@/lib/date";
 
-const STORAGE_KEY = "make-one-smile:stats:v1";
+const STORAGE_KEY = "make-one-smile:stats:v2";
+const LEGACY_STORAGE_KEY = "make-one-smile:stats:v1";
+const LEGACY_COMMUNITY_SEED = 153_294;
+const LEGACY_PERSONAL_SEED = 27;
+const LEGACY_STREAK_SEED = 8;
 
 export interface SmileStats {
   communitySmiles: number;
@@ -18,10 +22,10 @@ export interface SmileStats {
 
 function createInitialStats(): SmileStats {
   return {
-    communitySmiles: 153_294,
-    mySmiles: 27,
-    streak: 8,
-    lastSuccessDate: getYesterdayDateKey(),
+    communitySmiles: 0,
+    mySmiles: 0,
+    streak: 0,
+    lastSuccessDate: "",
     earnedStickerIds: [],
     lastStickerId: null,
   };
@@ -74,10 +78,32 @@ function migrateStats(value: unknown): SmileStats | null {
 function readStats() {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (!saved) return null;
+    if (saved) {
+      const parsed: unknown = JSON.parse(saved);
+      return migrateStats(parsed);
+    }
 
-    const parsed: unknown = JSON.parse(saved);
-    return migrateStats(parsed);
+    const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (!legacy) return null;
+
+    const legacyStats = migrateStats(JSON.parse(legacy) as unknown);
+    if (!legacyStats) return null;
+
+    const migratedStats: SmileStats = {
+      ...legacyStats,
+      communitySmiles: Math.max(
+        0,
+        legacyStats.communitySmiles - LEGACY_COMMUNITY_SEED,
+      ),
+      mySmiles: Math.max(0, legacyStats.mySmiles - LEGACY_PERSONAL_SEED),
+      streak:
+        legacyStats.streak >= LEGACY_STREAK_SEED
+          ? legacyStats.streak - LEGACY_STREAK_SEED
+          : legacyStats.streak,
+    };
+
+    saveStats(migratedStats);
+    return migratedStats;
   } catch {
     return null;
   }
