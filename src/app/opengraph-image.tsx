@@ -123,6 +123,11 @@ export default function OpenGraphImage() {
         </div>
       </div>
     </div>,
-    size,
+    {
+      ...size,
+      headers: {
+        "Cache-Control": "public, max-age=0, must-revalidate",
+      },
+    },
   );
 }
