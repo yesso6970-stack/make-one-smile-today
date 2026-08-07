@@ -147,7 +147,7 @@ export function AiSmileIdeas() {
             >
               <p className="flex items-center gap-1.5 text-xs font-black text-[#8067bd] dark:text-[#d9c8ff]">
                 <MessageCircleHeart className="h-4 w-4" aria-hidden="true" />
-                추천 문구가 도착했어요
+                그대로 복사해 보내는 추천 문구
               </p>
               <blockquote className="mt-3 text-[15px] leading-7 font-bold">
                 “{idea.message}”
