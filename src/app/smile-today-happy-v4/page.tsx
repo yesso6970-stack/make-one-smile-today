@@ -16,7 +16,7 @@ const description = "하루 한 사람에게 작은 미소를 선물하는 따�
  * prevents users from accidentally copying the messenger-cached home URL.
  */
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: { absolute: APP_NAME },
   description,
   robots: { index: false, follow: true },
   openGraph: {

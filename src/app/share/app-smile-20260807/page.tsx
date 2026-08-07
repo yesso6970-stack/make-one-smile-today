@@ -13,7 +13,7 @@ import { ShareRedirect } from "./share-redirect";
 const description = "하루 한 사람에게 작은 미소를 선물하는 따뜻한 습관";
 
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: { absolute: APP_NAME },
   description,
   alternates: { canonical: APP_URL },
   robots: { index: false, follow: true },
