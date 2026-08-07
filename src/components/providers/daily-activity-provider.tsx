@@ -71,10 +71,11 @@ export function DailyActivityProvider({
 
   useEffect(() => {
     const stored = dailyActivityStorage.read();
+    const smileStats = dailyActivityStorage.readSmileStatsBridge();
     const storedMission = MISSIONS.some(
       (mission) => mission.id === stored.missionByDate[todayKey],
     );
-    const initialized = storedMission
+    const missionReady = storedMission
       ? stored
       : {
           ...stored,
@@ -83,6 +84,28 @@ export function DailyActivityProvider({
             [todayKey]: getDefaultMission(todayKey).id,
           },
         };
+    const bridgedDates = new Set(missionReady.completedDates);
+    if (smileStats?.lastSuccessDate)
+      bridgedDates.add(smileStats.lastSuccessDate);
+    const bridgeStreakIsCurrent = smileStats?.lastSuccessDate
+      ? calculateStreak([smileStats.lastSuccessDate], todayKey) > 0
+      : false;
+    const initialized: DailyActivityState = {
+      ...missionReady,
+      completedDates: [...bridgedDates].sort(),
+      completedCountBaseline: Math.max(
+        missionReady.completedCountBaseline,
+        smileStats?.mySmiles ?? 0,
+      ),
+      streakBaseline: Math.max(
+        missionReady.streakBaseline,
+        bridgeStreakIsCurrent ? (smileStats?.streak ?? 0) : 0,
+      ),
+      points: Math.max(
+        missionReady.points,
+        (smileStats?.mySmiles ?? 0) * DAILY_MISSION_POINTS,
+      ),
+    };
 
     setState(persist(initialized));
     setHydrated(true);
@@ -109,7 +132,10 @@ export function DailyActivityProvider({
 
   const isTodayCompleted = state.completedDates.includes(todayKey);
   const completionLockRef = useRef(isTodayCompleted);
-  const streak = calculateStreak(state.completedDates, todayKey);
+  const streak = Math.max(
+    calculateStreak(state.completedDates, todayKey),
+    state.streakBaseline,
+  );
   const todayJournal = state.journalByDate[todayKey] ?? "";
 
   useEffect(() => {
@@ -155,8 +181,11 @@ export function DailyActivityProvider({
       }
     }
 
-    const beforeCount = state.completedDates.length;
-    const afterCount = completedDates.length;
+    const beforeCount = Math.max(
+      state.completedDates.length,
+      state.completedCountBaseline,
+    );
+    const afterCount = Math.max(completedDates.length, beforeCount + 1);
     const newBadgeIds = ACHIEVEMENT_BADGES.filter(
       (badge) =>
         beforeCount < badge.requiredDays && afterCount >= badge.requiredDays,
@@ -166,6 +195,7 @@ export function DailyActivityProvider({
       persist({
         ...state,
         completedDates,
+        completedCountBaseline: afterCount,
         awardedMilestones,
         points: state.points + awardedPoints,
       }),

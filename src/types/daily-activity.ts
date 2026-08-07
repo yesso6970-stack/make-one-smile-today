@@ -29,12 +29,14 @@ export interface AchievementBadge {
 }
 
 export interface DailyActivityState {
-  version: 1;
+  version: 2;
   missionByDate: Record<string, string>;
   completedDates: string[];
   journalByDate: Record<string, string>;
   points: number;
   awardedMilestones: string[];
+  completedCountBaseline: number;
+  streakBaseline: number;
 }
 
 export interface MissionCompletionResult {

@@ -12,12 +12,14 @@ export interface CalendarDay {
 
 export function createInitialDailyActivityState(): DailyActivityState {
   return {
-    version: 1,
+    version: 2,
     missionByDate: {},
     completedDates: [],
     journalByDate: {},
     points: 0,
     awardedMilestones: [],
+    completedCountBaseline: 0,
+    streakBaseline: 0,
   };
 }
 

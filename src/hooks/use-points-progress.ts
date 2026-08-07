@@ -5,7 +5,10 @@ import { useDailyActivity } from "@/hooks/use-daily-activity";
 
 export function usePointsProgress() {
   const { state, streak } = useDailyActivity();
-  const completedDays = state.completedDates.length;
+  const completedDays = Math.max(
+    state.completedDates.length,
+    state.completedCountBaseline,
+  );
   const unlockedBadgeIds = ACHIEVEMENT_BADGES.filter(
     (badge) => completedDays >= badge.requiredDays,
   ).map((badge) => badge.id);

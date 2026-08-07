@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { PencilLine, Save } from "lucide-react";
+import { CheckCircle2, HardDrive, PencilLine, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -67,6 +67,18 @@ export function DailyJournal() {
           <Save className="h-3.5 w-3.5" />
           {todayJournal ? "수정 저장" : "기록 저장"}
         </Button>
+      </div>
+      <div className="text-muted relative mt-4 flex items-start gap-2 rounded-xl bg-white/55 px-3 py-2 text-[10px] leading-4 font-semibold dark:bg-white/5">
+        {todayJournal ? (
+          <CheckCircle2 className="text-success mt-0.5 h-3.5 w-3.5 shrink-0" />
+        ) : (
+          <HardDrive className="text-accent mt-0.5 h-3.5 w-3.5 shrink-0" />
+        )}
+        <span>
+          {todayJournal
+            ? "오늘 기록이 저장됐어요. 웃음 챌린더에서 오늘 날짜를 누르면 다시 볼 수 있어요."
+            : "기록은 이 브라우저에 안전하게 저장되며, 저장 후 웃음 챌린더에서 다시 볼 수 있어요."}
+        </span>
       </div>
     </motion.section>
   );

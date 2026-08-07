@@ -17,6 +17,7 @@ import { createContextualCard } from "@/constants/contextual-cards";
 import { SMILE_CARDS } from "@/constants/dummy-data";
 import { TARGETS } from "@/constants/targets";
 import { useCardDeck } from "@/hooks/use-card-deck";
+import { useDailyMission } from "@/hooks/use-daily-mission";
 import { useKoreanDate } from "@/hooks/use-korean-date";
 import { useSeoulWeather } from "@/hooks/use-seoul-weather";
 import { useSmileStats } from "@/hooks/use-smile-stats";
@@ -48,6 +49,12 @@ function SmileCardContent() {
   );
   const { card, currentIndex, drawNext } = useCardDeck(dailyCards);
   const { registerSmile } = useSmileStats();
+  const { completeMission } = useDailyMission();
+
+  const registerCompletedSmile = () => {
+    registerSmile();
+    completeMission();
+  };
 
   const copyCard = async () => {
     const copied = await copyText(card.message);
@@ -156,7 +163,7 @@ function SmileCardContent() {
         <AnimatedButton
           href="/success"
           size="xl"
-          onClick={registerSmile}
+          onClick={registerCompletedSmile}
           className="bg-success hover:bg-success/90 mt-3 w-full text-white shadow-[0_12px_24px_rgba(76,175,80,0.2)]"
         >
           <Check className="h-5 w-5" /> 상대가 웃었어요

@@ -1,16 +1,25 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarCheck2,
+  ChevronLeft,
+  ChevronRight,
+  NotebookPen,
+} from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useActivityCalendar } from "@/hooks/use-activity-calendar";
+import { useDailyActivity } from "@/hooks/use-daily-activity";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 export function SmileCalendar() {
+  const { state, todayKey } = useDailyActivity();
+  const [selectedDate, setSelectedDate] = useState(todayKey);
   const {
     monthKey,
     monthTitle,
@@ -27,7 +36,9 @@ export function SmileCalendar() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-muted text-xs font-bold">나의 따뜻한 발자국</p>
-            <h2 className="text-ink mt-0.5 text-lg font-black">웃음 캘린더</h2>
+            <h2 className="text-ink mt-0.5 flex items-center gap-1.5 text-lg font-black">
+              <CalendarCheck2 className="text-accent h-5 w-5" /> 웃음 챌린더
+            </h2>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -78,10 +89,12 @@ export function SmileCalendar() {
             transition={{ duration: 0.22 }}
           >
             {days.map((day) => (
-              <div
+              <button
                 key={day.dateKey}
                 className="flex h-10 items-center justify-center"
                 aria-label={`${day.dateKey}${day.isCompleted ? " 미션 완료" : ""}`}
+                type="button"
+                onClick={() => setSelectedDate(day.dateKey)}
               >
                 <motion.span
                   className={cn(
@@ -90,6 +103,9 @@ export function SmileCalendar() {
                     day.isCurrentMonth && "text-muted",
                     day.isToday &&
                       "ring-accent ring-2 ring-offset-1 ring-offset-[var(--surface)]",
+                    selectedDate === day.dateKey &&
+                      !day.isToday &&
+                      "ring-border ring-2",
                     day.isCompleted && "bg-primary text-base shadow-sm",
                   )}
                   initial={day.isCompleted ? { scale: 0.6 } : false}
@@ -98,14 +114,31 @@ export function SmileCalendar() {
                 >
                   {day.isCompleted ? "😊" : day.day}
                 </motion.span>
-              </div>
+              </button>
             ))}
           </motion.div>
         </AnimatePresence>
 
-        <div className="bg-surface-soft text-muted mt-4 rounded-2xl px-4 py-3 text-center text-xs font-semibold">
-          미션을 완료한 날마다 달력에 미소가 피어나요.
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedDate}
+            className="bg-surface-soft text-muted mt-4 rounded-2xl px-4 py-3 text-xs font-semibold"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            <p className="text-ink flex items-center gap-1.5 font-extrabold">
+              <NotebookPen className="text-accent h-3.5 w-3.5" />
+              {selectedDate}의 기록
+            </p>
+            <p className="mt-1.5 leading-5">
+              {state.journalByDate[selectedDate] ||
+                (state.completedDates.includes(selectedDate)
+                  ? "😊 웃음 챌린지를 완료한 날이에요."
+                  : "아직 저장된 기록이 없어요.")}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </CardContent>
     </Card>
   );

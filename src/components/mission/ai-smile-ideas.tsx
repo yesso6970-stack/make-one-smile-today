@@ -1,11 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot, SendHorizontal, Sparkles } from "lucide-react";
+import { Bot, Check, Copy, SendHorizontal, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { copyText } from "@/lib/clipboard";
 import { recommendSmileIdea } from "@/services/ai";
 import type { AiSmileIdea } from "@/types/daily-activity";
 
@@ -13,6 +14,21 @@ export function AiSmileIdeas() {
   const [audience, setAudience] = useState("");
   const [idea, setIdea] = useState<AiSmileIdea | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [copiedIdeaId, setCopiedIdeaId] = useState<string | null>(null);
+
+  const handleCopy = async () => {
+    if (!idea) return;
+    const copied = await copyText(idea.message);
+    if (!copied) {
+      toast.error("복사하지 못했어요. 브라우저 권한을 확인해주세요.");
+      return;
+    }
+    setCopiedIdeaId(idea.id);
+    window.setTimeout(() => setCopiedIdeaId(null), 1600);
+    toast.success("추천 문장만 복사했어요", {
+      description: "메신저나 문자에 바로 붙여넣어 사용해보세요.",
+    });
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -108,7 +124,21 @@ export function AiSmileIdeas() {
               exit={{ opacity: 0, x: -10 }}
             >
               <Sparkles className="mb-2 h-4 w-4" aria-hidden="true" />
-              {idea.message}
+              <p>{idea.message}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                className="mt-3 border-[#cfc0ef] bg-white/70 text-[#493d60] hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white"
+              >
+                {copiedIdeaId === idea.id ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+                {copiedIdeaId === idea.id ? "복사했어요" : "추천 내용 복사"}
+              </Button>
             </motion.div>
           ) : (
             <motion.div
