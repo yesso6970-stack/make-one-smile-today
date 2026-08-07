@@ -119,6 +119,44 @@ a:focus-visible {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
+.journal-paper {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 2.4rem,
+      rgba(255, 179, 0, 0.18) 2.4rem,
+      rgba(255, 179, 0, 0.18) calc(2.4rem + 1px),
+      transparent calc(2.4rem + 1px)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1.72rem,
+      rgba(128, 123, 112, 0.12) 1.72rem,
+      rgba(128, 123, 112, 0.12) calc(1.72rem + 1px)
+    );
+}
+
+.dark .journal-paper {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 2.4rem,
+      rgba(255, 179, 0, 0.14) 2.4rem,
+      rgba(255, 179, 0, 0.14) calc(2.4rem + 1px),
+      transparent calc(2.4rem + 1px)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1.72rem,
+      rgba(255, 255, 255, 0.07) 1.72rem,
+      rgba(255, 255, 255, 0.07) calc(1.72rem + 1px)
+    );
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

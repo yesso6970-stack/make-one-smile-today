@@ -2,6 +2,17 @@
 
 하루 한 사람에게 작은 미소를 선물하는 모바일 퍼스트 PWA입니다. 대상별 웃음 카드, 날짜·계절·날씨에 맞춘 콘텐츠, 칭찬 스티커와 공용 미소 카운터를 제공합니다.
 
+## 매일 30초 루틴
+
+- 6개 카테고리에서 고른 오늘의 미션 50개와 하루 한 번 완료 처리
+- 완료일을 보여주는 월간 웃음 캘린더와 수정 가능한 200자 감성 기록
+- 날짜 기준으로 고정되는 오늘의 명언 100개
+- 미션 완료 `+10P`, 7일 연속 `+100P`, 30일 연속 `+500P` 포인트 규칙
+- 1일·7일·30일·100일 성취 배지와 Gold Badge
+- 향후 OpenAI 연동 경계를 분리한 더미 AI 웃음 아이디어 10개
+
+개인 미션·기록·포인트는 인증이 없는 STEP 2에서는 `src/services/daily-storage.ts`의 버전 관리된 브라우저 저장소 어댑터를 사용합니다. 공용 미소 카운터는 기존 Neon PostgreSQL에 계속 저장됩니다. 인증 도입 후 개인 저장 어댑터만 Neon API로 교체할 수 있도록 UI와 저장 계층을 분리했습니다.
+
 ## 기술 스택
 
 - Next.js 15 / App Router / TypeScript
@@ -91,7 +102,13 @@ npm run format:check
 src/
 ├── app/                    # App Router 페이지와 Route Handlers
 ├── components/             # 재사용 UI 컴포넌트
-├── constants/              # 정적 카드 데이터
+│   ├── mission/            # 오늘의 미션과 AI 아이디어
+│   ├── calendar/           # 월간 웃음 캘린더
+│   ├── journal/            # 오늘의 기록
+│   ├── quote/              # 날짜 고정 명언
+│   ├── points/             # 포인트 진행 상태
+│   └── badge/              # 성취 배지
+├── constants/              # 미션·명언·배지·포인트 데이터
 ├── db/
 │   ├── index.ts            # pooled Drizzle client
 │   ├── schema.ts           # PostgreSQL schema
@@ -99,5 +116,12 @@ src/
 │   └── migrations/         # 생성·검토된 SQL migrations
 ├── hooks/                  # 카드·저장·날씨 훅
 ├── lib/                    # 공통 유틸리티
+├── services/               # 로컬 저장소 및 AI 서비스 경계
 └── types/                  # 애플리케이션 타입
 ```
+
+## 이후 서비스 연동 위치
+
+- OpenAI: `src/services/ai.ts`의 `recommendSmileIdea` 구현만 서버 Route Handler 호출로 교체합니다. API 키는 클라이언트에 노출하지 않습니다.
+- 개인 Neon 저장: 인증 도입 후 `daily_mission_completions`, `daily_journals`, `user_points`, `user_badges` 테이블을 `src/db/schema.ts`에 추가하고 `src/db/migrations`로 배포합니다.
+- 저장 API: 사용자 세션을 검증하는 `src/app/api/daily/*` Route Handler에서 Drizzle을 호출하고 `src/services/daily-storage.ts`와 동일한 인터페이스로 연결합니다.

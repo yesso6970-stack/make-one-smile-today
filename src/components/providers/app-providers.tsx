@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 
 import { useServiceWorker } from "@/hooks/use-service-worker";
 
+import { DailyActivityProvider } from "./daily-activity-provider";
+
 function PwaRegistration() {
   useServiceWorker();
   return null;
@@ -21,7 +23,7 @@ export function AppProviders({
       disableTransitionOnChange
     >
       <PwaRegistration />
-      {children}
+      <DailyActivityProvider>{children}</DailyActivityProvider>
       <Toaster position="top-center" richColors closeButton />
     </ThemeProvider>
   );

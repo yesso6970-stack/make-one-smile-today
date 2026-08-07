@@ -5,12 +5,19 @@ import { CalendarDays, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AnimatedCounter } from "@/components/animations/animated-counter";
+import { BadgeShowcase } from "@/components/badge/badge-showcase";
 import { AnimatedButton } from "@/components/buttons/animated-button";
+import { SmileCalendar } from "@/components/calendar/smile-calendar";
 import { CounterCard } from "@/components/cards/counter-card";
 import { StickerShelf } from "@/components/cards/sticker-shelf";
+import { DailyJournal } from "@/components/journal/daily-journal";
 import { AppShell } from "@/components/layout/app-shell";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { Header } from "@/components/layout/header";
+import { AiSmileIdeas } from "@/components/mission/ai-smile-ideas";
+import { DailyMissionCard } from "@/components/mission/daily-mission-card";
+import { PointsCard } from "@/components/points/points-card";
+import { DailyQuoteCard } from "@/components/quote/daily-quote-card";
 import { useKoreanDate } from "@/hooks/use-korean-date";
 import { useSmileStats } from "@/hooks/use-smile-stats";
 import { formatKoreanDate } from "@/lib/date";
@@ -85,11 +92,14 @@ function HomeScreen() {
     <AppShell>
       <Header />
       <motion.main
-        className="flex flex-1 flex-col px-5 pt-6 pb-28"
+        className="flex flex-1 flex-col gap-4 px-5 pt-6 pb-28"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
       >
+        <DailyMissionCard />
+        <PointsCard />
+
         <section className="from-primary via-primary shadow-warm relative overflow-hidden rounded-[2rem] bg-gradient-to-br to-[#ffe996] px-6 py-7">
           <div
             className="absolute -top-10 -right-7 h-32 w-32 rounded-full bg-white/30"
@@ -115,10 +125,7 @@ function HomeScreen() {
           </div>
         </section>
 
-        <section
-          className="mt-4 grid grid-cols-2 gap-3"
-          aria-label="나의 미소 기록"
-        >
+        <section className="grid grid-cols-2 gap-3" aria-label="나의 미소 기록">
           <CounterCard
             label="내가 웃게 한 사람"
             value={stats.mySmiles}
@@ -133,9 +140,14 @@ function HomeScreen() {
           />
         </section>
 
+        <SmileCalendar />
+        <DailyJournal />
+        <AiSmileIdeas />
+        <DailyQuoteCard />
+        <BadgeShowcase />
         <StickerShelf earnedStickerIds={stats.earnedStickerIds} />
 
-        <div className="mt-auto pt-9">
+        <div className="pt-5">
           <AnimatedButton
             href="/target"
             size="xl"
