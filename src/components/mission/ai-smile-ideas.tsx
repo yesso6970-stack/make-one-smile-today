@@ -1,8 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot, Check, Copy, SendHorizontal, Sparkles } from "lucide-react";
-import { FormEvent, useState } from "react";
+import {
+  Bot,
+  Check,
+  Copy,
+  MessageCircleHeart,
+  SendHorizontal,
+} from "lucide-react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +21,12 @@ export function AiSmileIdeas() {
   const [idea, setIdea] = useState<AiSmileIdea | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIdeaId, setCopiedIdeaId] = useState<string | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!idea) return;
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [idea]);
 
   const handleCopy = async () => {
     if (!idea) return;
@@ -41,6 +53,10 @@ export function AiSmileIdeas() {
     try {
       const nextIdea = await recommendSmileIdea(audience, idea?.id);
       setIdea(nextIdea);
+      setCopiedIdeaId(null);
+      toast.success("추천 문구가 도착했어요", {
+        description: "아래 문장을 복사해서 바로 사용할 수 있어요.",
+      });
     } catch {
       toast.error("아이디어를 준비하지 못했어요. 잠시 후 다시 시도해주세요.");
     } finally {
@@ -82,10 +98,14 @@ export function AiSmileIdeas() {
           maxLength={40}
           className="border-border bg-surface text-ink placeholder:text-muted/60 min-w-0 flex-1 rounded-2xl border px-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#9b84cf]/40"
         />
-        <Button type="submit" disabled={isLoading} className="px-4">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="px-4"
+          aria-label={idea ? "다른 문구 추천받기" : "AI 추천받기"}
+        >
           <SendHorizontal className="h-4 w-4" />
-          <span className="sr-only">AI 추천받기</span>
-          추천
+          {idea ? "다시 추천" : "추천"}
         </Button>
       </form>
 
@@ -117,14 +137,21 @@ export function AiSmileIdeas() {
             </motion.div>
           ) : idea ? (
             <motion.div
+              ref={resultRef}
               key={idea.id}
-              className="relative rounded-[1.5rem] bg-[#eee7ff] px-5 py-4 text-sm leading-6 font-semibold text-[#493d60] dark:bg-[#493d60] dark:text-[#f5efff]"
+              className="relative rounded-[1.5rem] border border-[#d9ccf6] bg-[#eee7ff] px-5 py-4 text-[#493d60] shadow-[0_10px_24px_rgba(105,78,158,.12)] dark:border-white/15 dark:bg-[#493d60] dark:text-[#f5efff]"
               initial={{ opacity: 0, scale: 0.96, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, x: -10 }}
+              role="status"
             >
-              <Sparkles className="mb-2 h-4 w-4" aria-hidden="true" />
-              <p>{idea.message}</p>
+              <p className="flex items-center gap-1.5 text-xs font-black text-[#8067bd] dark:text-[#d9c8ff]">
+                <MessageCircleHeart className="h-4 w-4" aria-hidden="true" />
+                추천 문구가 도착했어요
+              </p>
+              <blockquote className="mt-3 text-[15px] leading-7 font-bold">
+                “{idea.message}”
+              </blockquote>
               <Button
                 type="button"
                 variant="outline"
